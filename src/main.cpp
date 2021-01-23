@@ -4,8 +4,15 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
+#include <ctime>
 
+#include "Vector2.h"
+#include "Vector3.h"
 #include "gl_canvas2d.h"
+#include "Fps.h"
+#include "Engine.cpp"
+#include "Botao.h"
 
 
 //variavel global para selecao do que sera exibido na canvas.
@@ -14,11 +21,17 @@ double angle = 0;
 float addy = 0, addx = 0;
 float cont=0;
 bool frente = false, tras = false, direita = false, esquerda = false;
-int screenWidth = 500, screenHeight = 500; //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
+int screenWidth = 1280, screenHeight = 720; //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
+clock_t timer;
 
-void DrawMouseScreenCoords()
-{
+Fps *fps = nullptr;
+Engine *eng = nullptr, *eng2 = nullptr;
+Botao *less_tooth = nullptr, *more_tooth = nullptr, *less_radius = nullptr, *more_radius = nullptr, *less_tsize = nullptr, *more_tsize = nullptr;
+Botao *less_hspin = nullptr, *more_hspin = nullptr, *less_vspin = nullptr, *more_vspin = nullptr, *less_thick = nullptr, *more_thick = nullptr;
+
+
+void DrawMouseScreenCoords(){
     char str[100];
     sprintf(str, "Mouse: (%d,%d)", mouseX, mouseY);
     CV::text(10,300, str);
@@ -26,187 +39,155 @@ void DrawMouseScreenCoords()
     CV::text(10,320, str);
 }
 
-Vector2 avaliaBezier(float t, Vector2 p1, Vector2 p2, Vector2 p3)
-{
-    float x_t = p1.x*pow(1-t, 2) + p2.x*(2*t*(1-t)) + p3.x*pow(t, 3);
-    float y_t = p1.y*pow(1-t, 2) + p2.y*(2*t*(1-t)) + p3.y*pow(t, 3);
-    Vector2 ret (x_t, y_t);
-    return ret;
-}
-
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
 //Deve-se manter essa fun��o com poucas linhas de codigo.
-void render()
-{
-   //float x = mouseX - screenWidth/2;
-   //float y = mouseY - screenHeight/2;
+void render(){
+    // Set timer to calculate the FPS
+    timer = clock();
+    glClearColor(0, 0, 0, 0);
 
-   //Vector2 v(x, y);
-   //v.normalize();
+    // Gear renders
+    eng->Render(eng2);
+    eng2->Render(eng);
 
-   //Vector2 v2(1, 0);
-   //v2.normalize();
+    // Button renders
+    CV::translate(0, 0);
+    less_tooth->Render();
+    more_tooth->Render();
+    less_radius->Render();
+    more_radius->Render();
+    less_tsize->Render();
+    more_tsize->Render();
+    less_hspin->Render();
+    more_hspin->Render();
+    less_vspin->Render();
+    more_vspin->Render();
+    less_thick->Render();
+    more_thick->Render(true);
 
-   //float ang = v2.angulo(v) * 57;
-   //char str[10];
-
-   //sprintf(str, "%f", ang);
-   //CV::text(50, 50, str);
-
-   //v*100;
-
-   //CV::translate(screenWidth/2, screenHeight/2);
-   //CV::color(11);
-   //CV::line(0,0, v.x*100, v.y*100);
-   //CV::circle(v.x*100, v.y*100, 10, 30);
-
-   if(frente)
-   {
-    addy+=2*cos(angle);
-    addx+=2*sin(angle);
-   }
-   if(tras)
-   {
-    addy-=2*cos(angle);
-    addx-=2*sin(angle);
-   }
-   if(direita)
-   {
-    angle-=0.02;
-   }
-   if(esquerda)
-   {
-    angle+=0.02;
-   }
-
-   int new_centre_height= round(((100)/2)-1);
-   int new_centre_width= round(((50)/2)-1);
-
-   CV::color(0.5, 0.5, 0);
-   //CV::rectFill(0, 0, 100, 200);
-   for(float y=0; y<100; y+=0.5)
-   for(float x=0; x<50; x+=0.5)
-   {
-    double old_x = x-new_centre_width-1;
-    double old_y = y-new_centre_height-1;
-
-    int new_y = round(-old_x*sin(angle)+old_y*cos(angle));
-    int new_x = round(old_x*cos(angle)+old_y*sin(angle));
-
-    new_y = new_centre_height-new_y;
-    new_x = new_centre_width-new_x;
-
-    CV::point(new_x+addx, new_y+addy);
-   }
-
-
-   CV::translate(screenWidth/2, screenHeight/2);
-   for(float t=0; t<1; t+=0.001)
-   {
-    CV::color(0, 0, 0);
-    float y = pow((1-t), 3);
-    CV::point(t*50, y*50);
-
-    CV::color(1, 0, 0);
-    y = 3*t*pow((1-t), 2);
-    CV::point(t*50, y*50);
-
-    CV::color(0, 1, 0);
-    y = 3*pow(t,2)*(1-t);
-    CV::point(t*50, y*50);
-
-    CV::color(0, 0, 1);
-    y = pow(t, 3);
-    CV::point(t*50, y*50);
-   }
-
-
-   Vector2 p1 (100,100);
-   Vector2 p2 (300,300);
-   Vector2 p3 (500,50);
-   Vector2 p4 (400,310);
-
-
-   Vector2 vetor, vetor2;
-   CV::translate(screenWidth/2, screenHeight/2-100);
-   for(float t=0; t<1; t+=0.001)
-   {
-    CV::color(0.5, 0.5, 0.5);
-    vetor = avaliaBezier(t, p1, p2, p3);
-    CV::point(vetor.x, vetor.y);
-    vetor = avaliaBezier(cont, p1, p2, p3);
-    CV::circle(vetor.x, vetor.y, 10, 10);
-    vetor = avaliaBezier(cont, p1, p2, p3);
-    vetor2 = avaliaBezier(cont+0.001, p1, p2, p3);
-    Vector2 top (vetor2.x - vetor.x, vetor2.y - vetor.y);
-    top.normalize();
-    CV::line(vetor.x, vetor.y, top.x*100+vetor.x, top.y*100+vetor.y);
-   }
-
-   cont += 0.001;
-
-
+    // FPS render
+    fps->Render(timer);
 }
 
 //funcao chamada toda vez que uma tecla for pressionada.
-void keyboard(int key)
-{
+void keyboard(int key){
    printf("\nTecla: %d" , key);
-
-   if(key==201)
-   {
-    frente = true;
-   }
-   if(key==203)
-   {
-    tras = true;
-   }
-   if(key==200)
-   {
-    direita = true;
-   }
-   if(key==202)
-   {
-    esquerda = true;
-   }
 }
 
 //funcao chamada toda vez que uma tecla for liberada
-void keyboardUp(int key)
-{
+void keyboardUp(int key){
    printf("\nLiberou: %d" , key);
-
-   if(key==201)
-   {
-    frente = false;
-   }
-   if(key==203)
-   {
-    tras = false;
-   }
-   if(key==200)
-   {
-    direita = false;
-   }
-   if(key==202)
-   {
-    esquerda = false;
-   }
 }
 
 //funcao para tratamento de mouse: cliques, movimentos e arrastos
-void mouse(int button, int state, int wheel, int direction, int x, int y)
-{
+void mouse(int button, int state, int wheel, int direction, int x, int y){
    mouseX = x; //guarda as coordenadas do mouse para exibir dentro da render()
    mouseY = y;
 
-   printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction,  x, y);
+   //printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction,  x, y);
 
+    if (button == 0){
+        if (state == 0){
+            if (less_tooth->Colidiu(x, y)){
+                less_tooth->updateStatus();
+                eng->set_n(eng->get_n()-1);
+                eng2->set_n(eng2->get_n()-1);
+            } else if (more_tooth->Colidiu(x, y)){
+                more_tooth->updateStatus();
+                eng->set_n(eng->get_n()+1);
+                eng2->set_n(eng2->get_n()+1);
+            } else if (more_radius->Colidiu(x, y)){
+                more_radius->updateStatus();
+                eng->set_r(eng->get_r()+1);
+                eng2->set_r(eng2->get_r()+1);
+            } else if (less_radius->Colidiu(x, y)){
+                less_radius->updateStatus();
+                eng->set_r(eng->get_r()-1);
+                eng2->set_r(eng2->get_r()-1);
+            } else if (more_tsize->Colidiu(x, y)){
+                more_tsize->updateStatus();
+                eng->set_r2(eng->get_r2()+1);
+                eng2->set_r2(eng2->get_r2()+1);
+            } else if (less_tsize->Colidiu(x, y)){
+                less_tsize->updateStatus();
+                eng->set_r2(eng->get_r2()-1);
+                eng2->set_r2(eng2->get_r2()-1);
+            } else if (less_hspin->Colidiu(x, y)){
+                less_hspin->updateStatus();
+                eng->set_hangle(eng->get_hangle()-0.1);
+                eng2->set_hangle(eng2->get_hangle()-0.1);
+            } else if (more_hspin->Colidiu(x, y)){
+                more_hspin->updateStatus();
+                eng->set_hangle(eng->get_hangle()+0.1);
+                eng2->set_hangle(eng2->get_hangle()+0.1);
+            } else if (less_vspin->Colidiu(x, y)){
+                less_vspin->updateStatus();
+                eng->set_vangle(eng->get_vangle()-0.1);
+                eng2->set_vangle(eng2->get_vangle()-0.1);
+            } else if (more_vspin->Colidiu(x, y)){
+                more_vspin->updateStatus();
+                eng->set_vangle(eng->get_vangle()+0.1);
+                eng2->set_vangle(eng2->get_vangle()+0.1);
+            } else if (less_thick->Colidiu(x, y)){
+                less_thick->updateStatus();
+                eng->set_thick(eng->get_thick()-1);
+                eng2->set_thick(eng2->get_thick()-1);
+            } else if (more_thick->Colidiu(x, y)){
+                more_thick->updateStatus();
+                eng->set_thick(eng->get_thick()+1);
+                eng2->set_thick(eng2->get_thick()+1);
+            }
+        } else if (state == 1){
+            if (less_tooth->Colidiu(x, y))
+                less_tooth->updateStatus();
+            else if (more_tooth->Colidiu(x, y))
+                more_tooth->updateStatus();
+            else if (more_radius->Colidiu(x, y))
+                more_radius->updateStatus();
+            else if (less_radius->Colidiu(x, y))
+                less_radius->updateStatus();
+            else if (more_tsize->Colidiu(x, y))
+                more_tsize->updateStatus();
+            else if (less_tsize->Colidiu(x, y))
+                less_tsize->updateStatus();
+            else if (less_hspin->Colidiu(x, y))
+                less_hspin->updateStatus();
+            else if (more_hspin->Colidiu(x, y))
+                more_hspin->updateStatus();
+            else if (less_vspin->Colidiu(x, y))
+                less_vspin->updateStatus();
+            else if (more_vspin->Colidiu(x, y))
+                more_vspin->updateStatus();
+            else if (less_thick->Colidiu(x, y))
+                less_thick->updateStatus();
+            else if (more_thick->Colidiu(x, y))
+                more_thick->updateStatus();
+        }
+    }
 }
 
-int main(void)
-{
+int main(){
    CV::init(&screenWidth, &screenHeight, "Canvas de Aula");
+
+   eng = new Engine(70, 10, 20, 445, 295, 0.01, 25);
+   eng2 = new Engine(70, 10, 20, 555, 425, -0.01, 25);
+   fps = new Fps(30, 690);
+
+   less_tooth = new Botao(1050, 450, 80, 40, "-Tooth");
+   more_tooth = new Botao(1150, 450, 80, 40, "+Tooth");
+   less_radius = new Botao(1050, 400, 80, 40, "-Radius");
+   more_radius = new Botao(1150, 400, 80, 40, "+Radius");
+   less_tsize = new Botao(1050, 350, 80, 40, "-T Size");
+   more_tsize = new Botao(1150, 350, 80, 40, "+T Size");
+   less_thick = new Botao(1050, 300, 80, 40, "-Thick");
+   more_thick = new Botao(1150, 300, 80, 40, "+Thick");
+
+   less_hspin = new Botao(1050, 250, 80, 40, "-H Spin");
+   more_hspin = new Botao(1150, 250, 80, 40, "+H Spin");
+   less_vspin = new Botao(1050, 200, 80, 40, "-V Spin");
+   more_vspin = new Botao(1150, 200, 80, 40, "+V Spin");
+
+
    CV::run();
 }

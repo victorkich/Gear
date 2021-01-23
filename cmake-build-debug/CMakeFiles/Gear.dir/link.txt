@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/Gear.dir/src/gl_canvas2d.cpp.o CMakeFiles/Gear.dir/src/main.cpp.o CMakeFiles/Gear.dir/src/Relogio.cpp.o  -o Gear 
