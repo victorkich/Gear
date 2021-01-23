@@ -93,20 +93,16 @@
 
 1606394643 /home/victorkich/Documents/CG Zero bala/Gear/src/Vector2.h
 
-1611418337 source:/home/victorkich/Documents/CG Zero bala/Gear/src/main.cpp
+1611431482 source:/home/victorkich/Documents/CG Zero bala/Gear/src/main.cpp
 	<GL/glut.h>
-	<GL/freeglut_ext.h>
-	<math.h>
 	<stdio.h>
-	<stdlib.h>
 	<vector>
 	<ctime>
-	"Vector2.h"
-	"Vector3.h"
 	"gl_canvas2d.h"
 	"Fps.h"
 	"Engine.cpp"
 	"Botao.h"
+	"Checkbox.h"
 
 1589218349 source:/home/victorkich/Documents/CG Zero bala/Gear/src/Relogio.cpp
 	"Relogio.h"
@@ -127,18 +123,19 @@
 	<GL/glut.h>
 	"gl_canvas2d.h"
 
-1611418100 /home/victorkich/Documents/CG Zero bala/Gear/src/Botao.h
+1611431538 /home/victorkich/Documents/CG Zero bala/Gear/src/Botao.h
 	"gl_canvas2d.h"
 
-1611419243 source:/home/victorkich/Documents/CG Zero bala/Gear/src/Engine.cpp
+1611431458 source:/home/victorkich/Documents/CG Zero bala/Gear/src/Engine.cpp
 	<math.h>
 	<GL/glut.h>
 	"gl_canvas2d.h"
-	"Vector3.h"
 
-1611422210 /home/victorkich/Documents/CG Zero bala/Gear/src/Engine.cpp
+1611431458 /home/victorkich/Documents/CG Zero bala/Gear/src/Engine.cpp
 	<math.h>
 	<GL/glut.h>
 	"gl_canvas2d.h"
-	"Vector3.h"
+
+1611430825 /home/victorkich/Documents/CG Zero bala/Gear/src/Checkbox.h
+	"gl_canvas2d.h"
 

@@ -46,10 +46,8 @@
 		<Unit filename="include/GL/glut.h" />
 		<Unit filename="src/Engine.cpp" />
 		<Unit filename="src/Botao.h" />
-		<Unit filename="src/Relogio.cpp" />
-		<Unit filename="src/Relogio.h" />
 		<Unit filename="src/Vector2.h" />
-		<Unit filename="src/Vector3.h" />
+		<Unit filename="src/Checkbox.h" />
 		<Unit filename="src/Fps.h" />
 		<Unit filename="src/gl_canvas2d.cpp" />
 		<Unit filename="src/gl_canvas2d.h" />
