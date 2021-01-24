@@ -1,6 +1,5 @@
 #include <math.h>
-#include <GL/glut.h>
-#include "gl_canvas2d.h"
+#include "../Canvas/gl_canvas2d.h"
 
 class Engine{
 private:
@@ -77,6 +76,43 @@ public:
       thick = _thick;
   }
 
+  void update_zangle(){
+      zangle += add_zangle;
+      if (zangle > PI_2 || zangle < -PI_2)
+          zangle = 0;
+  }
+
+  void render_miniview(){
+      CV::translate(float(x*0.3+750), float(y*0.3-20));
+      float old_x, old_y, px, py, px2, py2, po, ra, aux = r / 5;
+      bool first = true;
+
+      for(float theta = 0; theta < PI_2; theta += 0.02){
+          po = pow(sin(n * theta), 2);
+          if (po > 0.9)
+              po = 0.9;
+          ra = r + round(po)*po*r2;
+          px = ra * cos(theta);
+          py = ra * sin(theta);
+          px2 = float((px*cos(zangle)-py*sin(zangle))*0.3);
+          py2 = float((px*sin(zangle)+py*cos(zangle))*0.3);
+          if (first)
+              first = false;
+          else
+              CV::line(old_x, old_y, px2, py2);
+          old_x = px2;
+          old_y = py2;
+      }
+
+      for(float theta = 0; theta < PI_2; theta += 0.3){
+          px = aux * cos(theta);
+          py = aux * sin(theta);
+          px2 = float((px*cos(zangle)-py*sin(zangle))*0.3);
+          py2 = float((px*sin(zangle)+py*cos(zangle))*0.3);
+          CV::point(px2, py2);
+      }
+  }
+
   void Render(Engine *eng, bool wide){
       CV::color(1, 1, 1);
       float alt_xangle, alt_yangle, zx, zy, xt, yt, old_x, old_y, px, py, px2, py2, po, ra, aux = r / 5;
@@ -120,35 +156,7 @@ public:
           CV::point(px2+zx, py2+zy);
       }
 
-      CV::translate(x*0.3+750, y*0.3-20);
-      first = true;
-      for(float theta = 0; theta < PI_2; theta += 0.02){
-          po = pow(sin(n * theta), 2);
-          if (po > 0.9)
-              po = 0.9;
-          ra = r + round(po)*po*r2;
-          px = ra * cos(theta);
-          py = ra * sin(theta);
-          px2 = float((px*cos(zangle)-py*sin(zangle))*0.3);
-          py2 = float((px*sin(zangle)+py*cos(zangle))*0.3);
-          if (first)
-              first = false;
-          else
-              CV::line(old_x, old_y, px2, py2);
-          old_x = px2;
-          old_y = py2;
-      }
-
-      for(float theta = 0; theta < PI_2; theta += 0.2){
-          px = aux * cos(theta);
-          py = aux * sin(theta);
-          px2 = float((px*cos(zangle)-py*sin(zangle))*0.3);
-          py2 = float((px*sin(zangle)+py*cos(zangle))*0.3);
-          CV::point(px2, py2);
-      }
-
-      zangle += add_zangle;
-      if (zangle > PI_2 || zangle < -PI_2)
-          zangle = 0;
+      render_miniview();
+      update_zangle();
   }
 };

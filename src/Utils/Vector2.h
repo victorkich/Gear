@@ -1,7 +1,6 @@
 #ifndef __VECTOR_2_H__
 #define __VECTOR_2_H__
 
-
 class Vector2
 {
 public:
@@ -67,10 +66,6 @@ public:
    {
        return acos(x*v2.x + y*v2.y);
    }
-
-   //Adicionem os demais overloads de operadores aqui.
-
-
 };
 
 #endif

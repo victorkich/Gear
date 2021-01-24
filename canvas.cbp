@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Canvas C++" />
+		<Option title="Gear" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -44,13 +44,14 @@
 			<Add option="-lglut" />
 		</Linker>
 		<Unit filename="include/GL/glut.h" />
-		<Unit filename="src/Engine.cpp" />
-		<Unit filename="src/Botao.h" />
-		<Unit filename="src/Vector2.h" />
-		<Unit filename="src/Checkbox.h" />
-		<Unit filename="src/Fps.h" />
-		<Unit filename="src/gl_canvas2d.cpp" />
-		<Unit filename="src/gl_canvas2d.h" />
+		<Unit filename="src/Interface/Engine.cpp" />
+		<Unit filename="src/Interface/Botao.h" />
+		<Unit filename="src/Interface/Panel.h" />
+		<Unit filename="src/Utils/Vector2.h" />
+		<Unit filename="src/Interface/Checkbox.h" />
+		<Unit filename="src/Interface/Fps.h" />
+		<Unit filename="src/Canvas/gl_canvas2d.cpp" />
+		<Unit filename="src/Canvas/gl_canvas2d.h" />
 		<Unit filename="src/main.cpp" />
 		<Extensions>
 			<code_completion />

@@ -1,7 +1,7 @@
 #ifndef __CHECKBOX_H__
 #define __CHECKBOX_H__
 
-#include "gl_canvas2d.h"
+#include "../Canvas/gl_canvas2d.h"
 
 //Classe de criacao da caixa de checagem
 class Checkbox {
@@ -46,6 +46,7 @@ public:
 
     //Funcao para renderizar a caixa de selecao, podendo também inserir duas linhas nas diagonais da caixa caso o status esteja ativado
     void Render() {
+        CV::translate(0, 0);
         CV::color(1, 1, 1);
         CV::rect(x, y, x + largura, y + altura);
         CV::color(1, 1, 1);
@@ -60,7 +61,7 @@ public:
 
     //recebe as coordenadas do mouse para tratar clique ou detectar quando o mouse esta em cima do botao
     bool Colidiu(int mx, int my) {
-        if (mx >= x && mx <= (x + largura) && my >= y && my <= (y + altura)) {
+        if (float(mx) >= x && float(mx) <= (x + largura) && float(my) >= y && float(my) <= (y + altura)) {
             return true;
         }
         return false;

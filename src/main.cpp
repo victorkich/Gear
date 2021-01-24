@@ -1,51 +1,40 @@
 #include <GL/glut.h>
-#include <stdio.h>
 #include <vector>
 #include <ctime>
 
-#include "gl_canvas2d.h"
-#include "Fps.h"
-#include "Engine.cpp"
-#include "Botao.h"
-#include "Checkbox.h"
+#include "Canvas/gl_canvas2d.h"
+#include "Interface/Fps.h"
+#include "Interface/Engine.cpp"
+#include "Interface/Botao.h"
+#include "Interface/Checkbox.h"
+#include "Interface/Panel.h"
 
-
-//variavel global para selecao do que sera exibido na canvas.
-int opcao  = 50;
-double angle = 0;
-float addy = 0, addx = 0;
-float cont=0;
-bool frente = false, tras = false, direita = false, esquerda = false;
-int screenWidth = 1280, screenHeight = 720; //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
-int mouseX, mouseY, old_mouseX, old_mouseY; //variaveis globais do mouse para poder exibir dentro da render().
+// variavel global para selecao do que sera exibido na canvas.
+int screenWidth = 1280, screenHeight = 720;  // largura e altura inicial da tela . Alteram com o redimensionamento de tela.
+int mouseX, mouseY, old_mouseX, old_mouseY;  // variaveis globais do mouse para poder exibir dentro da render().
+bool moving = false;
 clock_t timer;
 
-Fps *fps = nullptr;
-Engine *eng = nullptr, *eng2 = nullptr;
-Botao *less_tooth = nullptr, *more_tooth = nullptr, *less_radius = nullptr, *more_radius = nullptr, *less_tsize = nullptr, *more_tsize = nullptr;
-Botao *less_speed = nullptr, *more_speed = nullptr, *less_thick = nullptr, *more_thick = nullptr;
-Checkbox *cb_wide = nullptr;
-
-bool moving = false;
-
-void DrawMouseScreenCoords(){
-    char str[100];
-    sprintf(str, "X: %d  Y: %d", mouseX, mouseY);
-    CV::text(830,210, str);
-}
+Fps *fps;
+Engine *eng, *eng2;
+Botao *less_tooth, *more_tooth, *less_radius, *more_radius, *less_tsize, *more_tsize, *less_speed, *more_speed, *less_thick, *more_thick;
+Checkbox *cb_wide;
+Panel *panel;
 
 void render(){
-    // Set timer to calculate the FPS
+    // Set timer to calculate the FPS after
     timer = clock();
+
+    // Reset background color to black
     glClearColor(0, 0, 0, 0);
 
+    // If moving send how much moved to the gears
     if (moving){
         eng->add(float(mouseX-old_mouseX), float(mouseY-old_mouseY));
         eng2->add(float(mouseX-old_mouseX), float(mouseY-old_mouseY));
     }
 
-    // Checkbox renders
-    CV::translate(0, 0);
+    // Checkbox render
     cb_wide->Render();
 
     // Gear renders
@@ -53,7 +42,6 @@ void render(){
     eng2->Render(eng, cb_wide->getStatus());
 
     // Button renders
-    CV::translate(0, 0);
     less_tooth->Render();
     more_tooth->Render();
     less_radius->Render();
@@ -63,30 +51,24 @@ void render(){
     less_speed->Render();
     more_speed->Render();
     less_thick->Render();
-    more_thick->Render(true);
+    more_thick->Render();
 
-    DrawMouseScreenCoords();
+    // Panel render
+    panel->Render(mouseX, mouseY);
 
     // FPS render
     fps->Render(timer);
 }
 
-//funcao chamada toda vez que uma tecla for pressionada.
-void keyboard(int key){
-   printf("\nTecla: %d" , key);
-}
+void keyboard(int key){}
+void keyboardUp(int key){}
 
-//funcao chamada toda vez que uma tecla for liberada
-void keyboardUp(int key){
-   printf("\nLiberou: %d" , key);
-}
-
-//funcao para tratamento de mouse: cliques, movimentos e arrastos
+// funcao para tratamento de mouse: cliques, movimentos e arrastos
 void mouse(int button, int state, int wheel, int direction, int x, int y){
-   mouseX = x; //guarda as coordenadas do mouse para exibir dentro da render()
+   mouseX = x;  // guarda as coordenadas do mouse para exibir dentro da render()
    mouseY = y;
 
-   //printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction,  x, y);
+   // printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction,  x, y);
 
     if (button == 0){
         if (state == 0){
@@ -169,10 +151,14 @@ void mouse(int button, int state, int wheel, int direction, int x, int y){
 int main(){
    CV::init(&screenWidth, &screenHeight, "Canvas de Aula");
 
+   // Gears
    eng = new Engine(70, 10, 20, 445, 295, 0.005, 25);
    eng2 = new Engine(70, 10, 20, 555, 425, -0.005, 25);
+
+   // FPS
    fps = new Fps(30, 690);
 
+   // Buttons
    less_tooth = new Botao(1050, 550, 80, 40, "-Tooth");
    more_tooth = new Botao(1150, 550, 80, 40, "+Tooth");
    less_radius = new Botao(1050, 500, 80, 40, "-Radius");
@@ -183,7 +169,12 @@ int main(){
    more_thick = new Botao(1150, 400, 80, 40, "+Thick");
    less_speed = new Botao(1050, 350, 80, 40, "-Speed");
    more_speed = new Botao(1150, 350, 80, 40, "+Speed");
+
+   // Checkbox
    cb_wide = new Checkbox(1050, 220, 40, 40, "Wideframe", true);
+
+   // Panel
+   panel = new Panel();
 
    CV::run();
 }
