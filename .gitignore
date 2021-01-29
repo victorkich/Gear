@@ -1,2 +1,4 @@
 .idea
 canvas.depend
+CMakeLists.txt
+cmake-build-debug

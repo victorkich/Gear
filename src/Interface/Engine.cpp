@@ -16,6 +16,11 @@ public:
         thick = _thick;
     }
 
+    void reset_angle(){
+        xangle = PI / 2;
+        yangle = PI / 2;
+    }
+
     void add(float add_x, float add_y) {
         add_xangle = float(add_x * 0.01);
         add_yangle = float(add_y * 0.01);
@@ -167,13 +172,19 @@ public:
         }
     }
 
-    void Render(Engine *eng, bool wide) {
+    void Render(Engine *eng, bool axe) {
         CV::color(1, 1, 1);
         float alt_xangle, alt_yangle, zx, zy, xt, yt, old_x, old_y, px, py, px2, py2, po, ra, aux = r / 5;
         bool first = true;
 
         alt_xangle = xangle + add_xangle;
         alt_yangle = yangle + add_yangle;
+
+        if (axe)
+            alt_xangle = PI/2;
+        else
+            alt_yangle = PI/2;
+
         zx = thick * cos(alt_xangle);
         zy = thick * cos(alt_yangle);
         xt = (x + eng->get_x()) / 2 + (x - (x + eng->get_x()) / 2) * sin(alt_xangle);
@@ -201,18 +212,13 @@ public:
             old_y = py2;
         }
 
-        for (float theta = 0; theta < PI_2; theta += 0.01) {
+        for (float theta = 0; theta < PI_2; theta += 0.02) {
             px = aux * cos(theta);
             py = aux * sin(theta);
             px2 = (px * cos(zangle) - py * sin(zangle)) * sin(alt_xangle);
             py2 = (px * sin(zangle) + py * cos(zangle)) * sin(alt_yangle);
-            if (sin(alt_xangle) > 0 && sin(alt_yangle) > 0) {
-                CV::point(px2, py2);
-                //if (sin(theta)*sin(zangle) > sin(alt_xangle))
-                //    CV::point(px2+zx, py2+zy);
-            } else {
-                CV::point(px2 + zx, py2 + zy);
-            }
+            CV::point(px2, py2);
+            CV::point(px2 + zx, py2 + zy);
         }
 
         render_miniview();

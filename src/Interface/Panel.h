@@ -10,7 +10,6 @@ public:
     void Render(int mouseX, int mouseY) {
         CV::color(1, 1, 1);
         CV::text(1090, 630, "EDIT PANEL");
-        CV::text(1090, 300, "VIEW PANEL");
         CV::text(450, 690, "PERSPECTIVE");
         CV::text(875, 165, "FRONT");
         CV::line(1000, 0, 1000, 720);

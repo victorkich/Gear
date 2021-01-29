@@ -18,8 +18,28 @@ clock_t timer;
 Fps *fps;
 Engine *eng, *eng2;
 Botao *less_tooth, *more_tooth, *less_radius, *more_radius, *less_tsize, *more_tsize, *less_speed, *more_speed, *less_thick, *more_thick;
-Checkbox *cb_wide;
+Checkbox *cb_vertical, *cb_horizontal;
 Panel *panel;
+
+void gear(float n=16, float r=30, float r2=15){
+    float po, ra, px, py, old_x, old_y;
+    bool first=true;
+    for (float theta = 0; theta < PI_2; theta += 0.001) {
+        po = pow(sin(n * theta), 2);
+        if (po > 0.9)
+            po = 0.9;
+        ra = r + round(po) * po * r2;
+        px = ra * cos(theta);
+        py = ra * sin(theta);
+        if (first)
+            first = false;
+        else {
+            CV::line(old_x, old_y, px, py);
+        }
+        old_x = px;
+        old_y = py;
+    }
+}
 
 void render() {
     // Set timer to calculate the FPS after
@@ -35,11 +55,12 @@ void render() {
     }
 
     // Checkbox render
-    cb_wide->Render();
+    cb_vertical->Render();
+    cb_horizontal->Render();
 
     // Gear renders
-    eng->Render(eng2, cb_wide->getStatus());
-    eng2->Render(eng, cb_wide->getStatus());
+    eng->Render(eng2, cb_vertical->getStatus());
+    eng2->Render(eng, cb_vertical->getStatus());
 
     // Button renders
     less_tooth->Render();
@@ -117,8 +138,12 @@ void mouse(int button, int state, int wheel, int direction, int x, int y) {
                 moving = true;
                 old_mouseX = mouseX;
                 old_mouseY = mouseY;
-            } else if (cb_wide->Colidiu(x, y))  // Atualiza o status da checkbox
-                cb_wide->updateStatus();
+            } else if (cb_vertical->Colidiu(x, y) || cb_horizontal->Colidiu(x, y)) {  // Atualiza o status da checkbox
+                cb_vertical->updateStatus();
+                cb_horizontal->updateStatus();
+                eng->reset_angle();
+                eng2->reset_angle();
+            }
         } else if (state == 1) {
             if (less_tooth->Colidiu(x, y))
                 less_tooth->updateStatus();
@@ -172,7 +197,8 @@ int main() {
     more_speed = new Botao(1150, 350, 80, 40, "+Speed");
 
     // Checkbox
-    cb_wide = new Checkbox(1050, 220, 40, 40, "Wideframe", true);
+    cb_vertical = new Checkbox(1050, 270, 40, 40, "Vertical", true);
+    cb_horizontal = new Checkbox(1050, 220, 40, 40, "Horizontal", false);
 
     // Panel
     panel = new Panel();
