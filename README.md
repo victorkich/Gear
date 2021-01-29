@@ -9,7 +9,7 @@
 
 ## Objective
 <p align="justify"> 
-  <a>The objective of this project is to create a simple (and very poorly optimized) system to understand how the base of opengl works with c++ and c for 2D environment.</a>
+  <a>The objective of this project is to create a simple (and very poorly optimized) system to understand how the base of opengl works with c++ and c for 3D environment.</a>
 </p>
 
 ## Setup
