@@ -21,26 +21,6 @@ Botao *less_tooth, *more_tooth, *less_radius, *more_radius, *less_tsize, *more_t
 Checkbox *cb_vertical, *cb_horizontal;
 Panel *panel;
 
-void gear(float n=16, float r=30, float r2=15){
-    float po, ra, px, py, old_x, old_y;
-    bool first=true;
-    for (float theta = 0; theta < PI_2; theta += 0.001) {
-        po = pow(sin(n * theta), 2);
-        if (po > 0.9)
-            po = 0.9;
-        ra = r + round(po) * po * r2;
-        px = ra * cos(theta);
-        py = ra * sin(theta);
-        if (first)
-            first = false;
-        else {
-            CV::line(old_x, old_y, px, py);
-        }
-        old_x = px;
-        old_y = py;
-    }
-}
-
 void render() {
     // Set timer to calculate the FPS after
     timer = clock();
