@@ -29,8 +29,20 @@ sudo apt-get install build-essential mesa-utils freeglut3-dev
 ```
 
 <p align="justify"> 
- <a>For test in your own computer, just compile with MinGW.</a>
+ <a>For test in your own computer, just compile using the following code:</a>
 </p>
+
+```shell
+g++ main.cpp -lGL -lGLU -lglut -pthread -o main
+```
+
+<p align="justify"> 
+ <a>And run it using the following code:</a>
+</p>
+
+```shell
+./main $PORT$
+```
 
 ## Example
 
