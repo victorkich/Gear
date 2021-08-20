@@ -1,5 +1,5 @@
 #include <math.h>
-#include "../Canvas/gl_canvas2d.h"
+#include "../Canvas/gl_canvas2d.cpp"
 
 class Engine {
 private:

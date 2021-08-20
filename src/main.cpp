@@ -154,7 +154,13 @@ void mouse(int button, int state, int wheel, int direction, int x, int y) {
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Erro, porta nao definida!\n");
+        printf("./SOFTWARE PORTA");
+        exit(1);
+    }
+
     CV::init(&screenWidth, &screenHeight, "Canvas de Aula");
 
     // Gears
