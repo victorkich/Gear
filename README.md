@@ -33,7 +33,8 @@ sudo apt-get install build-essential mesa-utils freeglut3-dev
 </p>
 
 ```shell
-g++ main.cpp -lGL -lGLU -lglut -pthread -o main
+g++ main.cpp -lGL -lGLU -lglut -pthread -lz -lrt -lm -o client
+g++ server.cpp -pthread -o server
 ```
 
 <p align="justify"> 
@@ -41,7 +42,8 @@ g++ main.cpp -lGL -lGLU -lglut -pthread -o main
 </p>
 
 ```shell
-./main $PORT$
+./server $PORT$
+./client localhost $PORT$
 ```
 
 ## Example
