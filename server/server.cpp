@@ -6,6 +6,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <iostream>
+#include <cstring>
+#include <vector>
 
 #define TOTAL 5
 #define PORT 9097
@@ -18,6 +21,61 @@ struct nodo {
 
 struct nodo nodo[5];
 
+std::vector<double> data_processing(int id, int operation, double v1, double v2){
+    std::vector<double> result;
+    switch (id) {
+        case 1:
+            if (operation) {
+                v1 += 1;
+                v2 += 1;
+            } else {
+                v1 += -1;
+                v2 += -1;
+            }
+            break;
+        case 2:
+            if (operation) {
+                v1 += 1;
+                v2 += 1;
+            } else {
+                v1 += -1;
+                v2 += -1;
+            }
+            break;
+        case 3:
+            if (operation) {
+                v1 += 1;
+                v2 += 1;
+            } else {
+                v1 += -1;
+                v2 += -1;
+            }
+            break;
+        case 4:
+            if (operation) {
+                v1 += 0.001;
+                v2 += -0.001;
+            } else {
+                v1 += -0.001;
+                v2 += 0.001;
+            }
+            break;
+        case 5:
+            if (operation) {
+                v1 += 1;
+                v2 += 1;
+            } else {
+                v1 += -1;
+                v2 += -1;
+            }
+            break;
+    }
+    result.push_back(v1);
+    result.push_back(v2);
+    return result;
+}
+
+
 void *cliente(void *arg) {
     long cid = (long)arg;
     int i, n;
@@ -25,23 +83,44 @@ void *cliente(void *arg) {
     while (true) {
         bzero(buffer,sizeof(buffer));
         n = read(nodo[cid].newsockfd,buffer,50);
-        printf("Recebeu: %s - %lu\n", buffer,strlen(buffer));
         if (n <= 0) {
-            printf("Erro lendo do socket id %lu!\n", cid);
+            std::cout << "Erro lendo do socket id: " << cid << "\n";
             close(nodo[cid].newsockfd);
             nodo[cid].newsockfd = -1;
 
             pthread_exit(NULL);
         }
+
+        std::cout << "Recebeu: " << buffer << " - " << strlen(buffer) << "\n";
+        char* chars_array = strtok(buffer, "#");
+        std::vector<char*> str;
+        while(chars_array) {
+            str.push_back(chars_array);
+            chars_array = strtok(NULL, "#");
+        }
+
+        int id, operation;
+        double v1, v2;
+        sscanf(str[0], "%d", &id);
+        sscanf(str[1], "%d", &operation);
+        sscanf(str[2], "%lf", &v1);
+        sscanf(str[3], "%lf", &v2);
+        std::cout << "ID: " << id << " Operation: " << operation << " Value 1: " << v1 << " Value 2: " << v2 << "\n";
+
+        std::vector<double> data;
+        data = data_processing(id, operation, v1, v2);
+        sprintf(buffer, "%d#%lf#%lf", id, data[0], data[1]);
+
         // MUTEX LOCK - GERAL
         pthread_mutex_lock(&m);
         for (i = 0;i < TOTAL; i++) {
-            if ((i != cid) && (nodo[i].newsockfd != -1)) {
-                n = write(nodo[i].newsockfd,buffer,50);
+            if ((i == cid) && (nodo[i].newsockfd != -1)) {
+                n = write(nodo[i].newsockfd, buffer, 50);
+                std::cout << "Enviando para o cliente: " << buffer << "\n";
                 if (n <= 0) {
-                    printf("Erro escrevendo no socket id %i!\n", i);
-//                    close(nodo[i].newsockfd);
-//                    nodo[i].newsockfd = -1;
+                    std::cout << "Erro escrevendo no socket id: " << i << "\n";
+//                  close(nodo[i].newsockfd);
+//                  nodo[i].newsockfd = -1;
                 }
             }
         }
@@ -58,13 +137,13 @@ int main(int argc, char *argv[]) {
     long i;
 
     if (argc < 2) {
-        printf("Erro, porta nao definida!\n");
-        printf("./SOFTWARE PORTA");
+        std::cout << "Erro, porta nao definida!\n";
+        std::cout << "./SOFTWARE PORTA";
         exit(1);
     }
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
-        printf("Erro abrindo o socket!\n");
+        std::cout << "Erro abrindo o socket!\n";
         exit(1);
     }
     bzero((char *) &serv_addr, sizeof(serv_addr));
@@ -73,7 +152,7 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(portno);
     if (bind(sockfd, (struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
-        printf("Erro fazendo bind!\n");
+        std::cout << "Erro fazendo bind!\n";
         exit(1);
     }
     listen(sockfd,5);
@@ -89,7 +168,7 @@ int main(int argc, char *argv[]) {
         // MUTEX LOCK - GERAL
         pthread_mutex_lock(&m);
         if (nodo[i].newsockfd < 0) {
-            printf("Erro no accept!\n");
+            std::cout << "Erro no accept!\n";
             exit(1);
         }
         pthread_create(&t, NULL, cliente, (void *)i);
