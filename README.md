@@ -18,7 +18,7 @@
 </p>
 
 ```shell
-git clone https://github.com/victorkich/CarRacer/
+git clone https://github.com/victorkich/Gear/
 ```
 
 <a>All of requirements is show in the badgets above, but if you want to install all of them, execute the following line of code:</a>
